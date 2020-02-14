@@ -8,7 +8,8 @@ public final class Config extends Activity {
         CIRCLE,
         SQUARE,
         LINE,
-        POLYGON
+        POLYGON,
+        TEXT
     }
     protected enum PenType {
         DRAW,

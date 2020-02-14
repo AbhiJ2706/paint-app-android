@@ -27,6 +27,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -43,6 +45,7 @@ import static android.content.ContentValues.TAG;
 
 public class MainActivity extends Activity {
 
+    private final int UNDO_AMOUNT = 50;
     private SeekBar thick;
     private SeekBar sides;
     private ImageView i;
@@ -60,11 +63,15 @@ public class MainActivity extends Activity {
     private ArrayList<Shape> shapes;
     private int prevX = 0;
     private int prevY = 0;
-    private int rgbR, rgbG, rgbB, colorLayoutBg;
+    private int rgbR, rgbG, rgbB;
     private int PaintColor = Color.argb(0xFF, 0, 0, 0);
-    LinearLayout l;
+    private LinearLayout l;
     private int bgColor;
+    private int undoModifier = 2;
+    private int redoModifier = 1;
     private ArrayList<Bitmap> undoBitmaps = new ArrayList<>();
+    private Bitmap undo_temp_bitmap;
+    private String textInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -256,12 +263,18 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void run() {
                                     try {
-                                        Thread.sleep(40);
+                                        Thread.sleep(100);
                                         prevX = 0;
-                                        if (undoBitmaps.size() > 10) {
+                                        if (undo_temp_bitmap != null) {
+                                            undoBitmaps.add(undo_temp_bitmap);
+                                            undo_temp_bitmap = null;
+                                        }
+                                        if (undoBitmaps.size() > UNDO_AMOUNT) {
                                             undoBitmaps.remove(0);
                                         }
-                                        undoBitmaps.add(b);
+                                        final Bitmap b_copy = b;
+                                        undoBitmaps.add(b_copy);
+                                        undoModifier = 2;
                                         Log.d("added", Integer.toString(undoBitmaps.size()));
                                     } catch (InterruptedException e) {
                                     }
@@ -279,7 +292,7 @@ public class MainActivity extends Activity {
                         c = new Canvas(b2);
                         for (Shape s : shapes) {
                             if (s.init) {
-                                s.finish(e.getX(), e.getY() - Config.offset, c, p, numSides, penMode);
+                                s.finish(e.getX(), e.getY() - Config.offset, c, p, numSides, penMode, textInput);
                             }
                         }
                         if (b2 != null) {
@@ -288,6 +301,7 @@ public class MainActivity extends Activity {
                         break;
                     case ERASE:
                         p.setColor(bgColor);
+                        p.setStyle(Paint.Style.FILL);
                         c.drawCircle(e.getX(), e.getY() - Config.offset, thickness, p);
                 }
             case MotionEvent.ACTION_CANCEL:
@@ -296,11 +310,17 @@ public class MainActivity extends Activity {
                         @Override
                         public void run() {
                             if (b2 != null) {
+                                if (undo_temp_bitmap != null) {
+                                    undoBitmaps.add(undo_temp_bitmap);
+                                    undo_temp_bitmap = null;
+                                }
                                 b = combine(b, b2);
-                                if (undoBitmaps.size() > 10) {
+                                if (undoBitmaps.size() > UNDO_AMOUNT) {
                                     undoBitmaps.remove(0);
                                 }
-                                undoBitmaps.add(b);
+                                final Bitmap b_copy = b;
+                                undoBitmaps.add(b_copy);
+                                undoModifier = 2;
                             }
                         }
                     };
@@ -341,7 +361,28 @@ public class MainActivity extends Activity {
         b = Bitmap.createBitmap(i.getWidth(), i.getHeight(), Bitmap.Config.ARGB_8888);
         c = new Canvas(b);
         i.setImageBitmap(b);
-        c.drawBitmap(undoBitmaps.get(undoBitmaps.size() - 2), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p );
+        if (undoBitmaps.size() - undoModifier < 0){
+            c.drawBitmap(undoBitmaps.get(0), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p);
+        } else {
+            c.drawBitmap(undoBitmaps.get(undoBitmaps.size() - undoModifier), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p);
+            undoModifier++;
+        }
+        undo_temp_bitmap = b;
+    }
+
+    public void redo (View v) {
+        b = Bitmap.createBitmap(i.getWidth(), i.getHeight(), Bitmap.Config.ARGB_8888);
+        c = new Canvas(b);
+        i.setImageBitmap(b);
+        if (undoBitmaps.size() - undoModifier + redoModifier < undoBitmaps.size()){
+            c.drawBitmap(undoBitmaps.get(undoBitmaps.size() - undoModifier + redoModifier), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p);
+        }
+        if (undoBitmaps.size() > UNDO_AMOUNT) {
+            undoBitmaps.remove(0);
+        }
+        final Bitmap b_copy = b;
+        undoBitmaps.add(b_copy);
+        redoModifier ++;
     }
 
     public void setEraserType(View v){
@@ -350,7 +391,7 @@ public class MainActivity extends Activity {
         pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
     }
 
-    public void shapeOrPen(View view){
+    public void shapeOrPen(View v){
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         pw = new PopupWindow(inflater.inflate(R.layout.shapeorpen_popup, null, false), Config.width, 200, true);
         pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
@@ -377,6 +418,13 @@ public class MainActivity extends Activity {
     public void chooseStroke(View v){
         penMode = Config.PenType.SHAPE_STROKE;
         chooseShape();
+    }
+
+    public void undoOrRedo(View v) {
+        pw.dismiss();
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        pw = new PopupWindow(inflater.inflate(R.layout.undoredo_popup, null, false), Config.width, 200, true);
+        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
     }
 
     public void fillOrStroke(View v) {
@@ -418,6 +466,8 @@ public class MainActivity extends Activity {
     }
 
     public void setPen(View v){
+        Toast t = Toast.makeText(i.getContext(), "The thickness can be changed using the bottom slider", Toast.LENGTH_LONG);
+        t.show();
         penMode = Config.PenType.DRAW;
         pw.dismiss();
     }
@@ -437,7 +487,24 @@ public class MainActivity extends Activity {
         pw.dismiss();
     }
 
+    public void setText(View v) {
+        shapeType = Config.Shape.TEXT;
+        final LinearLayout l = findViewById(R.id.textinput);
+        l.setVisibility(View.VISIBLE);
+        EditText text = findViewById(R.id.editText1);
+        textInput = text.getText().toString();
+        Button b = findViewById(R.id.button35);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                l.setVisibility(View.GONE);
+            }
+        });
+    }
+
     public void setPolygon(View v){
+        Toast t = Toast.makeText(i.getContext(), "The number of sides for the polygon can be chosen using the top slider", Toast.LENGTH_LONG);
+        t.show();
         shapeType = Config.Shape.POLYGON;
         pw.dismiss();
     }
@@ -527,6 +594,7 @@ public class MainActivity extends Activity {
 
             }
             c.drawBitmap(b3, null, new Rect((int) ((i.getWidth()/2) - (trueW/2)), (int) ((i.getHeight()/2) - (trueH/2)), (int) ((i.getWidth()/2) + (trueW/2)), (int) ((i.getHeight()/2) + (trueH/2))), p);
+            bgColor = Color.WHITE;
             pw.dismiss();
 
         }
