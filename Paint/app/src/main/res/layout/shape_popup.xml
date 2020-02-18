@@ -26,7 +26,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="setCircle"
-            android:text="Circle" />
+            android:text="@string/Circle" />
 
         <Button
             android:id="@+id/button9"
@@ -35,7 +35,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="setSquare"
-            android:text="Square" />
+            android:text="@string/Square" />
 
         <Button
             android:id="@+id/button8"
@@ -44,7 +44,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="setLine"
-            android:text="Line" />
+            android:text="@string/Line" />
 
         <Button
             android:id="@+id/button6"
@@ -54,15 +54,15 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="setPolygon"
-            android:text="Polygon" />
+            android:text="@string/Polygon" />
 
         <Button
             android:id="@+id/button34"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Text"
+            android:background="@android:color/transparent"
             android:onClick="setText"
-            android:background="@android:color/transparent"/>
+            android:text="@string/Text" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

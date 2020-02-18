@@ -23,7 +23,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="chooseFill"
-            android:text="Fill" />
+            android:text="@string/Fill" />
 
         <Button
             android:id="@+id/button2"

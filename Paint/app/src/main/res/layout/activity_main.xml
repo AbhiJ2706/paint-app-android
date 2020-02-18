@@ -117,27 +117,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="shapeOrPen"
             android:background="@android:color/transparent"
-            android:text="Pen mode" />
+            android:onClick="shapeOrPen"
+            android:text="@string/Pen_mode" />
 
         <Button
             android:id="@+id/button14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="setColor"
             android:background="@android:color/transparent"
-            android:text="Color" />
+            android:onClick="setColor"
+            android:text="@string/color" />
 
         <Button
             android:id="@+id/button4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:onClick="setEraserType"
             android:background="@android:color/transparent"
-            android:text="Erase" />
+            android:onClick="setEraserType"
+            android:text="@string/erase" />
 
         <Button
             android:id="@+id/button3"
@@ -146,7 +146,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="undoOrRedo"
-            android:text="Undo/redo" />
+            android:text="@string/undoredo" />
     </LinearLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -190,7 +190,7 @@
             android:layout_marginBottom="8dp"
             android:background="@android:color/transparent"
             android:onClick="goBack"
-            android:text="Back"
+            android:text="@string/Back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/left_guideline"
             app:layout_constraintHorizontal_bias="0.5"

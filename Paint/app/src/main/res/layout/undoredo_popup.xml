@@ -23,7 +23,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="undo"
-            android:text="Undo" />
+            android:text="@string/Undo" />
 
         <Button
             android:id="@+id/button2"
@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:onClick="redo"
-            android:text="Redo" />
+            android:text="@string/Redo" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

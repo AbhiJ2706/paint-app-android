@@ -32,11 +32,11 @@
             android:id="@+id/button10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:onClick="setPen"
             android:layout_marginEnd="16dp"
+            android:layout_weight="1"
             android:background="@android:color/transparent"
-            android:text="pen" />
+            android:onClick="setPen"
+            android:text="@string/Pen" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

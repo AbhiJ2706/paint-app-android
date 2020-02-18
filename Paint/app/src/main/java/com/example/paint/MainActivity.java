@@ -19,8 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,6 +32,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.Toast;
+import androidx.core.content.ContextCompat;
+import androidx.core.app.ActivityCompat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -466,7 +466,7 @@ public class MainActivity extends Activity {
     }
 
     public void setPen(View v){
-        Toast t = Toast.makeText(i.getContext(), "The thickness can be changed using the bottom slider", Toast.LENGTH_LONG);
+        Toast t = Toast.makeText(i.getContext(), R.string.Thickness_toast, Toast.LENGTH_LONG);
         t.show();
         penMode = Config.PenType.DRAW;
         pw.dismiss();
@@ -503,7 +503,7 @@ public class MainActivity extends Activity {
     }
 
     public void setPolygon(View v){
-        Toast t = Toast.makeText(i.getContext(), "The number of sides for the polygon can be chosen using the top slider", Toast.LENGTH_LONG);
+        Toast t = Toast.makeText(i.getContext(), R.string.Sides_toast, Toast.LENGTH_LONG);
         t.show();
         shapeType = Config.Shape.POLYGON;
         pw.dismiss();
@@ -542,7 +542,7 @@ public class MainActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Toast t = Toast.makeText(i.getContext(), "Image saved", Toast.LENGTH_LONG);
+            Toast t = Toast.makeText(i.getContext(), R.string.Saved_toast, Toast.LENGTH_LONG);
             t.show();
         } else {
 

@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:background="@drawable/emptybuttonborder"
-            android:text="Choose background color"
+            android:text="@string/Choose_color"
             android:textAlignment="center"
             android:textSize="24sp" />
 
@@ -216,7 +216,7 @@
             android:background="@drawable/emptybuttonborder"
             android:onClick="loadImage"
             android:padding="8dp"
-            android:text="Load image from gallery..."
+            android:text="@string/Load_image"
             tools:layout_margin="8dp" />
 
     </LinearLayout>
