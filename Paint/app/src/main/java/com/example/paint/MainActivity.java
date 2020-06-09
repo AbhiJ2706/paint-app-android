@@ -25,6 +25,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,7 +61,7 @@ public class MainActivity extends Activity {
     private Bitmap b2 = null;
     private Thread draw = null;
     private Thread returnShape = null;
-    private PopupWindow pw;
+    private View pw;
     private ArrayList<Shape> shapes;
     private int prevX = 0;
     private int prevY = 0;
@@ -123,9 +125,6 @@ public class MainActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
                 numSides = arg1;
-                if (numSides == 4){
-                    numSides = 5;
-                }
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -224,13 +223,18 @@ public class MainActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         Config.height = displayMetrics.heightPixels;
         Config.width = displayMetrics.widthPixels;
-        Config.offset = Config.height/10;
+        Config.offset = Config.height/10 + Config.height/30;
 
     }
 
 
     @Override
     public boolean onTouchEvent(MotionEvent e){
+        if (pw != null){
+            if (pw.getVisibility() != View.GONE) {
+                pw.setVisibility(View.GONE);
+            }
+        }
         c = new Canvas(b);
         i.setImageBitmap(b);
         switch(e.getActionMasked()) {
@@ -292,6 +296,8 @@ public class MainActivity extends Activity {
                         c = new Canvas(b2);
                         for (Shape s : shapes) {
                             if (s.init) {
+                                EditText text = findViewById(R.id.editText1);
+                                textInput = text.getText().toString();
                                 s.finish(e.getX(), e.getY() - Config.offset, c, p, numSides, penMode, textInput);
                             }
                         }
@@ -386,28 +392,31 @@ public class MainActivity extends Activity {
     }
 
     public void setEraserType(View v){
+        pw.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.eraser_popup, null, false), Config.width, 200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
+        pw = inflater.inflate(R.layout.eraser_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw.setVisibility(View.VISIBLE);
     }
 
     public void shapeOrPen(View v){
+        pw.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.shapeorpen_popup, null, false), Config.width, 200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
+        pw = inflater.inflate(R.layout.shapeorpen_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw.setVisibility(View.VISIBLE);
     }
 
     public void chooseShape(){
-        pw.dismiss();
+        pw.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.shape_popup, null, false), Config.width, 200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
+        pw = inflater.inflate(R.layout.shape_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw.setVisibility(View.VISIBLE);
     }
 
     public void goBack(View v) {
+        pw.setVisibility(View.INVISIBLE);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.goback_popup, null, false), Config.width, 200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.TOP, 0, 300);
+        pw = inflater.inflate(R.layout.goback_popup, (ViewGroup) findViewById(R.id.upper_constraint), true);
+        pw.setVisibility(View.VISIBLE);
     }
 
     public void chooseFill(View v){
@@ -421,17 +430,13 @@ public class MainActivity extends Activity {
     }
 
     public void undoOrRedo(View v) {
-        pw.dismiss();
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.undoredo_popup, null, false), Config.width, 200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
+        pw = inflater.inflate(R.layout.undoredo_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
     }
 
     public void fillOrStroke(View v) {
-        pw.dismiss();
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.strokeorfill_popup, null, false), Config.width, 200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.BOTTOM, 0, 300);
+        pw = inflater.inflate(R.layout.strokeorfill_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
     }
 
     public void setColor(View view){
@@ -448,11 +453,9 @@ public class MainActivity extends Activity {
 
     public void setEraser(View v){
         penMode = Config.PenType.ERASE;
-        pw.dismiss();
     }
 
     public void clear(View view){
-        pw.dismiss();
         b = Bitmap.createBitmap(i.getWidth(), i.getHeight(), Bitmap.Config.ARGB_8888);
         c = new Canvas(b);
         i.setImageBitmap(b);
@@ -460,31 +463,27 @@ public class MainActivity extends Activity {
     }
 
     public void chooseBG(){
+        if (pw != null) {
+            pw.setVisibility(View.GONE);
+        }
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = new PopupWindow(inflater.inflate(R.layout.colorpreset_popup, null, false), Config.width, 1200, true);
-        pw.showAtLocation(this.findViewById(R.id.imageView), Gravity.CENTER, 0, -40);
+        pw = inflater.inflate(R.layout.colorpreset_popup, (ViewGroup) findViewById(R.id.middle_constraint), true);
+        pw.setVisibility(View.VISIBLE);
     }
 
     public void setPen(View v){
         Toast t = Toast.makeText(i.getContext(), R.string.Thickness_toast, Toast.LENGTH_LONG);
         t.show();
         penMode = Config.PenType.DRAW;
-        pw.dismiss();
     }
 
     public void setCircle(View v){
         shapeType = Config.Shape.CIRCLE;
-        pw.dismiss();
-    }
-
-    public void setSquare(View v){
-        shapeType = Config.Shape.SQUARE;
-        pw.dismiss();
+        pw.setVisibility(View.INVISIBLE);
     }
 
     public void setLine(View v){
         shapeType = Config.Shape.LINE;
-        pw.dismiss();
     }
 
     public void setText(View v) {
@@ -492,6 +491,7 @@ public class MainActivity extends Activity {
         final LinearLayout l = findViewById(R.id.textinput);
         l.setVisibility(View.VISIBLE);
         EditText text = findViewById(R.id.editText1);
+        textInput = text.getText().toString();
         textInput = text.getText().toString();
         Button b = findViewById(R.id.button35);
         b.setOnClickListener(new View.OnClickListener() {
@@ -506,7 +506,6 @@ public class MainActivity extends Activity {
         Toast t = Toast.makeText(i.getContext(), R.string.Sides_toast, Toast.LENGTH_LONG);
         t.show();
         shapeType = Config.Shape.POLYGON;
-        pw.dismiss();
     }
 
     public void save(View v){
@@ -549,7 +548,6 @@ public class MainActivity extends Activity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
-        pw.dismiss();
     }
 
     public void loadImage(View v) {
@@ -595,104 +593,102 @@ public class MainActivity extends Activity {
             }
             c.drawBitmap(b3, null, new Rect((int) ((i.getWidth()/2) - (trueW/2)), (int) ((i.getHeight()/2) - (trueH/2)), (int) ((i.getWidth()/2) + (trueW/2)), (int) ((i.getHeight()/2) + (trueH/2))), p);
             bgColor = Color.WHITE;
-            pw.dismiss();
-
         }
     }
 
     public void setBGToWhite(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.white));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.white);
     }
 
     public void setBGToLGrey(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.lgrey));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.lgrey);
     }
 
     public void setBGToGray(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.gray));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.gray);
     }
 
     public void setBGToDGrey(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.dgrey));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.dgrey);
     }
 
     public void setBGToBlack(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.black));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.black);
     }
 
     public void setBGToDPurple(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.dpurple));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.dpurple);
     }
 
     public void setBGToBlue(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.blue));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.blue);
     }
 
     public void setBGToSBlue(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.sblue));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.sblue);
     }
 
     public void setBGToLBlue(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.lblue));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.lblue);
     }
 
     public void setBGToGreen(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.green));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.green);
     }
 
     public void setBGToDGreen(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.dgreen));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.dgreen);
     }
 
     public void setBGToDRed(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.red));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.red);
     }
 
     public void setBGToRed(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.dred));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.dred);
     }
 
     public void setBGToOrange(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.orange));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.orange);
     }
 
     public void setBGToYellow(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.yellow));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.yellow);
     }
 
     public void setBGToLYellow(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.lyellow));
-        pw.dismiss();
+        pw.setVisibility(View.GONE);
         bgColor = ContextCompat.getColor(this, R.color.lyellow);
     }
 

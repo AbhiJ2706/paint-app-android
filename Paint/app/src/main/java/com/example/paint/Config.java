@@ -6,7 +6,6 @@ public final class Config extends Activity {
 
     protected enum Shape {
         CIRCLE,
-        SQUARE,
         LINE,
         POLYGON,
         TEXT

@@ -20,7 +20,6 @@ public class Shape {
         this.init = true;
         this.type = new boolean[]{
                 s == Config.Shape.CIRCLE,
-                s == Config.Shape.SQUARE,
                 s == Config.Shape.LINE,
                 s == Config.Shape.POLYGON,
                 s == Config.Shape.TEXT
@@ -44,33 +43,9 @@ public class Shape {
 
         } else if (this.type[1]){
 
-            double r = Math.pow(Math.pow((y - this.y), 2) + Math.pow((x - this.x), 2), 0.5);
-            double d1 = Math.pow(Math.pow((y - (this.y - 100)), 2) + Math.pow((x - this.x), 2), 0.5);
-            double rotationNum = Math.pow(100, 2) + Math.pow(r, 2) - Math.pow(d1, 2);
-            double rotationDen = 2 * r * 100;
-            float angle = (float) Math.acos(rotationNum/rotationDen);
-            double size = Math.sqrt(2 * Math.pow(r, 2));
-            double drawX = this.x - size/2;
-            double drawY = this.y - size/2;
-            angle = (float) Math.toDegrees(angle);
-            angle = (x < this.x) ? (360 - angle) : angle;
-
-            if (pen.equals(Config.PenType.SHAPE_FILL)) {
-                p.setStyle(Paint.Style.FILL);
-            } else {
-                p.setStyle(Paint.Style.STROKE);
-            }
-
-            c.save();
-            c.rotate((angle - 135), this.x, this.y);
-            c.drawRect(new Rect((int) drawX, (int) drawY, (int) (drawX + size), (int) (drawY + size)), p);
-            c.restore();
-
-        } else if (this.type[2]){
-
             c.drawLine(this.x, this.y, x, y, p);
 
-        } else if (this.type[3]){
+        } else if (this.type[2]){
 
             double r = Math.pow(Math.pow((y - this.y), 2) + Math.pow((x - this.x), 2), 0.5);
             double d1 = Math.pow(Math.pow((y - (this.y - 100)), 2) + Math.pow((x - this.x), 2), 0.5);
@@ -95,27 +70,28 @@ public class Shape {
             c.drawPath(path, p);
             c.restore();
 
-        } else if (this.type[4]){
-            /*int l = t.length();
+        } else if (this.type[3]){
+            int l = t.length();
             l = 30 * l;
-            float ratio = l/50;
 
             double r = Math.pow(Math.pow((y - this.y), 2) + Math.pow((x - this.x), 2), 0.5);
             double d1 = Math.pow(Math.pow((y - (this.y - 100)), 2) + Math.pow((x - this.x), 2), 0.5);
             double rotationNum = Math.pow(100, 2) + Math.pow(r, 2) - Math.pow(d1, 2);
             double rotationDen = 2 * r * 100;
             float angle = (float) Math.acos(rotationNum/rotationDen);
-            double size = Math.sqrt(2 * Math.pow(r, 2));
-            double drawX = this.x - size/2;
-            double drawY = this.y - size/2;
+
+            double drawX = this.x-r/2;
+            double drawY = this.y;
             angle = (float) Math.toDegrees(angle);
-            angle = (x < this.x) ? (360 - angle) : angle;*/
+            angle = (x < this.x) ? (360 - angle) : angle;
 
-           // c.save();
-           // c.rotate((angle - 135), this.x, this.y);
+            c.save();
+            c.rotate((angle - 90), this.x, this.y);
 
-            c.drawText(t, (float) this.x, (float) this.y, p);
-            //c.restore();
+            p.setTextSize((float) (r*0.25));
+
+            c.drawText(t, (float) drawX, (float) drawY, p);
+            c.restore();
 
 
         }
