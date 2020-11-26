@@ -87,6 +87,7 @@ public class MainActivity extends Activity {
         i = findViewById(R.id.imageView);
         p = new Paint();
         c = new Canvas();
+        p.setStrokeCap(Paint.Cap.ROUND);
         l = findViewById(R.id.l1);
         l.setVisibility(View.GONE);
         shapes = new ArrayList<>();
@@ -432,6 +433,8 @@ public class MainActivity extends Activity {
         Toast t = Toast.makeText(i.getContext(), R.string.Thickness_toast, Toast.LENGTH_LONG);
         t.show();
         penMode = Config.PenType.DRAW;
+        i.setAlpha((float) 1);
+
     }
 
     public void setCircle(View v){
@@ -554,12 +557,14 @@ public class MainActivity extends Activity {
                 trueW = trueH/ratio;
 
             }
+            c.drawColor(ContextCompat.getColor(this, R.color.white));
             c.drawBitmap(b3, null, new Rect((int) ((i.getWidth()/2) - (trueW/2)),
                     (int) ((i.getHeight()/2) - (trueH/2)),
                     (int) ((i.getWidth()/2) + (trueW/2)),
                     (int) ((i.getHeight()/2) + (trueH/2))), p);
             bgColor = Color.WHITE;
         }
+        pw.setVisibility(View.GONE);
     }
 
     public void setBGToWhite(View v){
