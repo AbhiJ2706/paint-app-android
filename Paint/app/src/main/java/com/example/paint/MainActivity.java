@@ -1,5 +1,7 @@
 package com.example.paint;
 
+//https://suragch.medium.com/minimal-client-server-example-for-android-and-node-js-343780f28c28
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -34,6 +36,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.core.app.ActivityCompat;
 
@@ -83,6 +87,7 @@ public class MainActivity extends Activity {
         i = findViewById(R.id.imageView);
         p = new Paint();
         c = new Canvas();
+        p.setStrokeCap(Paint.Cap.ROUND);
         l = findViewById(R.id.l1);
         l.setVisibility(View.GONE);
         shapes = new ArrayList<>();
@@ -195,6 +200,7 @@ public class MainActivity extends Activity {
                 s3.setMax(0xFF);
                 s3.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
+                    @RequiresApi(api = Build.VERSION_CODES.CUPCAKE)
                     @Override
                     public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
                         rgbB = arg1;
@@ -269,16 +275,6 @@ public class MainActivity extends Activity {
                                     try {
                                         Thread.sleep(100);
                                         prevX = 0;
-                                        if (undo_temp_bitmap != null) {
-                                            undoBitmaps.add(undo_temp_bitmap);
-                                            undo_temp_bitmap = null;
-                                        }
-                                        if (undoBitmaps.size() > UNDO_AMOUNT) {
-                                            undoBitmaps.remove(0);
-                                        }
-                                        final Bitmap b_copy = b;
-                                        undoBitmaps.add(b_copy);
-                                        undoModifier = 2;
                                         Log.d("added", Integer.toString(undoBitmaps.size()));
                                     } catch (InterruptedException e) {
                                     }
@@ -316,17 +312,7 @@ public class MainActivity extends Activity {
                         @Override
                         public void run() {
                             if (b2 != null) {
-                                if (undo_temp_bitmap != null) {
-                                    undoBitmaps.add(undo_temp_bitmap);
-                                    undo_temp_bitmap = null;
-                                }
                                 b = combine(b, b2);
-                                if (undoBitmaps.size() > UNDO_AMOUNT) {
-                                    undoBitmaps.remove(0);
-                                }
-                                final Bitmap b_copy = b;
-                                undoBitmaps.add(b_copy);
-                                undoModifier = 2;
                             }
                         }
                     };
@@ -363,59 +349,29 @@ public class MainActivity extends Activity {
         canvas.drawBitmap(b2, 0, 0, null);
     }
 
-    public void undo(View v) {
-        b = Bitmap.createBitmap(i.getWidth(), i.getHeight(), Bitmap.Config.ARGB_8888);
-        c = new Canvas(b);
-        i.setImageBitmap(b);
-        if (undoBitmaps.size() - undoModifier < 0){
-            c.drawBitmap(undoBitmaps.get(0), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p);
-        } else {
-            c.drawBitmap(undoBitmaps.get(undoBitmaps.size() - undoModifier), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p);
-            undoModifier++;
-        }
-        undo_temp_bitmap = b;
-    }
-
-    public void redo (View v) {
-        b = Bitmap.createBitmap(i.getWidth(), i.getHeight(), Bitmap.Config.ARGB_8888);
-        c = new Canvas(b);
-        i.setImageBitmap(b);
-        if (undoBitmaps.size() - undoModifier + redoModifier < undoBitmaps.size()){
-            c.drawBitmap(undoBitmaps.get(undoBitmaps.size() - undoModifier + redoModifier), null, new Rect(0, 0, i.getWidth(), i.getHeight()), p);
-        }
-        if (undoBitmaps.size() > UNDO_AMOUNT) {
-            undoBitmaps.remove(0);
-        }
-        final Bitmap b_copy = b;
-        undoBitmaps.add(b_copy);
-        redoModifier ++;
-    }
-
     public void setEraserType(View v){
         pw.setVisibility(View.INVISIBLE);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = inflater.inflate(R.layout.eraser_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw = findViewById(R.id.eraserLayout);
         pw.setVisibility(View.VISIBLE);
     }
 
     public void shapeOrPen(View v){
+        i.setAlpha((float) 0.1);
         pw.setVisibility(View.INVISIBLE);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = inflater.inflate(R.layout.shapeorpen_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw = findViewById(R.id.shapeOrPenLayout);
         pw.setVisibility(View.VISIBLE);
     }
 
     public void chooseShape(){
         pw.setVisibility(View.INVISIBLE);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = inflater.inflate(R.layout.shape_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw = findViewById(R.id.shapeLayout);
         pw.setVisibility(View.VISIBLE);
     }
 
     public void goBack(View v) {
+        i.setAlpha((float) 0.1);
         pw.setVisibility(View.INVISIBLE);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = inflater.inflate(R.layout.goback_popup, (ViewGroup) findViewById(R.id.upper_constraint), true);
+        pw = findViewById(R.id.goBackLayout);
         pw.setVisibility(View.VISIBLE);
     }
 
@@ -435,8 +391,9 @@ public class MainActivity extends Activity {
     }
 
     public void fillOrStroke(View v) {
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        pw = inflater.inflate(R.layout.strokeorfill_popup, (ViewGroup) findViewById(R.id.lower_constraint), true);
+        pw.setVisibility(View.INVISIBLE);
+        pw = findViewById(R.id.fillOrStrokeLayout);
+        pw.setVisibility(View.VISIBLE);
     }
 
     public void setColor(View view){
@@ -445,6 +402,7 @@ public class MainActivity extends Activity {
         l.setVisibility(View.VISIBLE);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     public void finishedSettingColor(View view){
         i.setAlpha((float) 1.0);
         LinearLayout l = findViewById(R.id.l1);
@@ -475,15 +433,18 @@ public class MainActivity extends Activity {
         Toast t = Toast.makeText(i.getContext(), R.string.Thickness_toast, Toast.LENGTH_LONG);
         t.show();
         penMode = Config.PenType.DRAW;
+        i.setAlpha((float) 1);
+
     }
 
     public void setCircle(View v){
         shapeType = Config.Shape.CIRCLE;
         pw.setVisibility(View.INVISIBLE);
+        i.setAlpha((float) 1);
     }
 
     public void setLine(View v){
-        shapeType = Config.Shape.LINE;
+        i.setAlpha((float) 1); shapeType = Config.Shape.LINE;
     }
 
     public void setText(View v) {
@@ -500,12 +461,15 @@ public class MainActivity extends Activity {
                 l.setVisibility(View.GONE);
             }
         });
+        i.setAlpha((float) 1);
     }
 
     public void setPolygon(View v){
         Toast t = Toast.makeText(i.getContext(), R.string.Sides_toast, Toast.LENGTH_LONG);
         t.show();
         shapeType = Config.Shape.POLYGON;
+        i.setAlpha((float) 1);
+        pw.setVisibility(View.INVISIBLE);
     }
 
     public void save(View v){
@@ -548,6 +512,8 @@ public class MainActivity extends Activity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
+        pw.setVisibility(View.INVISIBLE);
+        i.setAlpha((float) 1);
     }
 
     public void loadImage(View v) {
@@ -591,9 +557,14 @@ public class MainActivity extends Activity {
                 trueW = trueH/ratio;
 
             }
-            c.drawBitmap(b3, null, new Rect((int) ((i.getWidth()/2) - (trueW/2)), (int) ((i.getHeight()/2) - (trueH/2)), (int) ((i.getWidth()/2) + (trueW/2)), (int) ((i.getHeight()/2) + (trueH/2))), p);
+            c.drawColor(ContextCompat.getColor(this, R.color.white));
+            c.drawBitmap(b3, null, new Rect((int) ((i.getWidth()/2) - (trueW/2)),
+                    (int) ((i.getHeight()/2) - (trueH/2)),
+                    (int) ((i.getWidth()/2) + (trueW/2)),
+                    (int) ((i.getHeight()/2) + (trueH/2))), p);
             bgColor = Color.WHITE;
         }
+        pw.setVisibility(View.GONE);
     }
 
     public void setBGToWhite(View v){
