@@ -567,6 +567,12 @@ public class MainActivity extends Activity {
         pw.setVisibility(View.GONE);
     }
 
+    public void goHome(View v){
+        Intent k = new Intent(this, HomeScreen.class);
+        startActivity(k);
+
+    }
+
     public void setBGToWhite(View v){
         c.drawColor(ContextCompat.getColor(this, R.color.white));
         pw.setVisibility(View.GONE);
