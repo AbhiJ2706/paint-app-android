@@ -434,7 +434,7 @@ public class MainActivity extends Activity {
         t.show();
         penMode = Config.PenType.DRAW;
         i.setAlpha((float) 1);
-
+        pw.setVisibility(View.GONE);
     }
 
     public void setCircle(View v){
