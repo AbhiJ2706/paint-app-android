@@ -434,7 +434,7 @@ public class MainActivity extends Activity {
         t.show();
         penMode = Config.PenType.DRAW;
         i.setAlpha((float) 1);
-
+        pw.setVisibility(View.GONE);
     }
 
     public void setCircle(View v){
@@ -565,6 +565,12 @@ public class MainActivity extends Activity {
             bgColor = Color.WHITE;
         }
         pw.setVisibility(View.GONE);
+    }
+
+    public void goHome(View v){
+        Intent k = new Intent(this, HomeScreen.class);
+        startActivity(k);
+
     }
 
     public void setBGToWhite(View v){

@@ -26,4 +26,6 @@
     <string name="Fill">Fill</string>
     <string name="Stroke">Stroke</string>
     <string name="text_enter">Enter text below</string>
+    <string name="paint">Paint</string>
+    <string name="draw">Draw Something!</string>
 </resources>
