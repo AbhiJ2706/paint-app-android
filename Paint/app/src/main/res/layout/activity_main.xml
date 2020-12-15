@@ -353,14 +353,6 @@
             android:onClick="setEraserType"
             android:text="@string/erase" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:onClick="undoOrRedo"
-            android:text="@string/undoredo" />
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -80,7 +80,7 @@ public class Shape {
             double rotationDen = 2 * r * 100;
             float angle = (float) Math.acos(rotationNum/rotationDen);
 
-            double drawX = this.x-r/2;
+            double drawX = this.x-r;
             double drawY = this.y;
             angle = (float) Math.toDegrees(angle);
             angle = (x < this.x) ? (360 - angle) : angle;
@@ -88,7 +88,7 @@ public class Shape {
             c.save();
             c.rotate((angle - 90), this.x, this.y);
 
-            p.setTextSize((float) (r*0.25));
+            p.setTextSize((float) (r/2));
 
             c.drawText(t, (float) drawX, (float) drawY, p);
             c.restore();

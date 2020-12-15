@@ -19,7 +19,7 @@ public class HomeScreen extends AppCompatActivity {
     }
 
     public void goToPaint(View v){
-        Intent k = new Intent(this, MainActivity.class);
+        Intent k = new Intent(this, tutorial.class);
         startActivity(k);
 
     }
