@@ -29,4 +29,9 @@
     <string name="paint">Paint</string>
     <string name="draw">Draw Something!</string>
     <string name="next">Next</string>
+    <string name="tuttext1">Choose your background color by clicking one of the buttons!</string>
+    <string name="tuttext2">Here is the main screen! You can change pen thickness using the slider at the top</string>
+    <string name="tuttext3">Draw shapes by going to the pen mode menu! Tap to place and the swipe to change the size.</string>
+    <string name="tuttext4">Change the sides of the shape using the slider at the top!</string>
+    <string name="tuttext5">Press back to save or delete your picture!</string>
 </resources>
