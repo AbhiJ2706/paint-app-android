@@ -34,4 +34,6 @@
     <string name="tuttext3">Draw shapes by going to the pen mode menu! Tap to place and the swipe to change the size.</string>
     <string name="tuttext4">Change the sides of the shape using the slider at the top!</string>
     <string name="tuttext5">Press back to save or delete your picture!</string>
+    <string name="tut_done_key">tut_done_key</string>
+    <string name="tut_button_text">How to use</string>
 </resources>
